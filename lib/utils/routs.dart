@@ -3,4 +3,5 @@ class MyRouts {
   static String homeRout = "/home";
   static String studentLoginRout = "/studentLogin";
   static String adminLoginRout = "/adminLogin";
+  static String lostItemDetailsRout = "/lostItemDetails";
 }
