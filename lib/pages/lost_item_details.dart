@@ -14,6 +14,7 @@ class LostItemDetails extends StatefulWidget {
 
 class LostItemDetailsState extends State<LostItemDetails> {
   final ImagePicker _picker = ImagePicker();
+  final myController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -90,8 +91,9 @@ class LostItemDetailsState extends State<LostItemDetails> {
                     ),
               const SizedBox(height: 16),
               TextField(
+                controller: myController,
                 decoration: const InputDecoration(labelText: 'Floor'),
-                onChanged: (value) => formProvider.setFloor(value),
+                onChanged: (value) => {print(myController.text.toString())},
               ),
               TextField(
                 decoration: const InputDecoration(labelText: 'Room'),
