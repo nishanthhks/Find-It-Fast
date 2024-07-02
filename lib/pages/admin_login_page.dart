@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:lost_and_found_app/utils/routs.dart";
 
 class AdminLoginPage extends StatefulWidget {
   const AdminLoginPage({super.key});
@@ -45,6 +46,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
             ElevatedButton(
               onPressed: () {
                 // Add your logic here
+                Navigator.pushNamed(context, MyRouts.adminHomeRoute);
               },
               child: const Text('Submit'),
             ),

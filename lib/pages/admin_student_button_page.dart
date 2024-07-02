@@ -67,7 +67,7 @@ class _AdminStudentButtonPage extends State<AdminStudentButtonPage> {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(
-                  "gghgh",
+                  "student",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
