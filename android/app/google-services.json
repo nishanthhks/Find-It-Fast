@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "100200169637",
+    "project_id": "find-it-fast-app",
+    "storage_bucket": "find-it-fast-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:100200169637:android:20f3f3f9116c24cfc8cd4c",
+        "android_client_info": {
+          "package_name": "com.findItFast.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCx2JGiO2TqC8LaRn-vPMUOBVEF312neoY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

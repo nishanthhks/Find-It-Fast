@@ -1,5 +1,7 @@
-package com.example.lost_and_found_app
+package com.findItFast.app
 
 import io.flutter.embedding.android.FlutterActivity
 
-class MainActivity: FlutterActivity()
+class MainActivity: FlutterActivity(){
+    
+}

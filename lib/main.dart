@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
           // home: AdminStudentButtonPage(),
           routes: {
             "/": (context) =>
-                AdminStudentButtonPage(), // "/" is the default route
+                AdminLoginPage(), // "/" is the default route
             MyRouts.studentLoginRout: (context) => StudentLogin(),
             MyRouts.adminLoginRout: (context) => AdminLoginPage(),
             MyRouts.lostItemDetailsRout: (context) => LostItemDetails(),
