@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lost_and_found_app/pages/admin_student_button_page.dart';
+import 'package:lost_and_found_app/services/authentication.dart';
 
 class StudentHomePage extends StatefulWidget {
   @override
@@ -24,18 +26,70 @@ class _StudentHomePageState extends State<StudentHomePage> {
     },
   ];
 
+  void _logout() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Logout"),
+          content: Text("Are you sure you want to logout?"),
+          actions: [
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text("Logout"),
+              onPressed: () async {
+                // Add your logout logic here
+                // For example, navigating back to the login page
+                Navigator.of(context).pop(); // Close the dialog
+
+                await AuthServices().signOut(); // Go back to previous screen
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => AdminStudentButtonPage()));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Student Home Page'),
+        actions: [
+          GestureDetector(
+            onTap: _logout,
+            child: Container(
+              margin: EdgeInsets.symmetric(horizontal: 10),
+              padding: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.red[600], // Light red color
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.logout,
+                color: Colors.white, // White icon color
+              ),
+            ),
+          ),
+        ],
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
         child: ListView.builder(
           itemCount: cards.length,
           itemBuilder: (context, index) {
-            return CardItem(
-              item: cards[index],
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: CardItem(
+                item: cards[index],
+              ),
             );
           },
         ),
@@ -55,7 +109,7 @@ class CardItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        contentPadding: EdgeInsets.all(10),
+        contentPadding: EdgeInsets.all(15),
         leading: Image.network(
           item['imageUrl']!,
           width: 100,

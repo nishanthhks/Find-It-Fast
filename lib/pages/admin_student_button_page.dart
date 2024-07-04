@@ -34,7 +34,7 @@ class _AdminStudentButtonPage extends State<AdminStudentButtonPage> {
           InkWell(
             onTap: () {
               Navigator.pushNamed(context, MyRouts.adminLoginRout);
-              print("admin");
+
             },
             child: Container(
                 width: 300,
@@ -56,7 +56,7 @@ class _AdminStudentButtonPage extends State<AdminStudentButtonPage> {
           InkWell(
             onTap: () {
               Navigator.pushNamed(context, MyRouts.studentLoginRout);
-              print("student");
+              
             },
             child: Container(
                 width: 300,

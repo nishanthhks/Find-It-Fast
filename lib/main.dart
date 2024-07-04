@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,8 +12,11 @@ import 'package:lost_and_found_app/pages/student_home_page.dart';
 
 import "package:lost_and_found_app/utils/routs.dart";
 import 'package:lost_and_found_app/providers/lost_item_form_provider.dart';
+import "package:firebase_core/firebase_core.dart";
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -32,10 +36,25 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
           ),
           // home: AdminStudentButtonPage(),
+          home: StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (snapshot.hasData) {
+                return StudentHomePage();
+              }
+              return AdminStudentButtonPage();
+            },
+          ),
           routes: {
-            "/": (context) => AdminStudentButtonPage(),// "/" is the default route
+            // "/": (context) =>
+            //     AdminStudentButtonPage(), // "/" is the default route
             MyRouts.adminStudentButtonRout: (context) =>
-                AdminStudentButtonPage(), 
+                AdminStudentButtonPage(),
             MyRouts.adminLoginRout: (context) => AdminLoginPage(),
             MyRouts.studentLoginRout: (context) => StudentLoginPage(),
             MyRouts.studentSignupRout: (context) => StudentSignupPage(),
