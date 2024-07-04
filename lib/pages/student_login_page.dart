@@ -122,16 +122,13 @@ class _StudentLoginState extends State<StudentLoginPage> {
                 SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
-                    // Add navigation logic here
+                    dialogBox(context);
                   },
                   child: Text('Forgot Password?'),
                 ),
                 SizedBox(height: 10),
                 TextButton(
-                  onPressed: () {
-                    // Add navigation logic for signup here
-                    Navigator.pushNamed(context, MyRouts.studentSignupRout);
-                  },
+                  onPressed: () {},
                   child: Text('Not registered? Sign up'),
                 ),
               ],
@@ -141,4 +138,91 @@ class _StudentLoginState extends State<StudentLoginPage> {
       ),
     );
   }
+}
+
+void dialogBox(BuildContext context) {
+  final TextEditingController _emailController = TextEditingController();
+  final auth = AuthServices();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Forgot Password',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Enter your email to reset your password',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Close'),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final email = _emailController.text.trim();
+                      try {
+                        await auth.sendPasswordResetEmail(email: email);
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Password reset email sent to $email'),
+                          ),
+                        );
+                      } catch (error) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error sending password reset email'),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text('Submit'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }

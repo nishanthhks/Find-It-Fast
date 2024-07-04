@@ -13,12 +13,16 @@ class AuthServices {
   }) async {
     String response = 'Some error occurred';
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      await _firestore.collection('students').doc(userCredential.user!.uid).set({
+      await _firestore
+          .collection('students')
+          .doc(userCredential.user!.uid)
+          .set({
         'name': name,
         'usn': usn,
         'email': email,
@@ -62,5 +66,9 @@ class AuthServices {
 
   Future<void> signOut() async {
     await _auth.signOut();
+  }
+
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    await _auth.sendPasswordResetEmail(email: email);
   }
 }
