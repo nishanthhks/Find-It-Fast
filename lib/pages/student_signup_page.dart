@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lost_and_found_app/pages/student_home_page.dart';
 import 'package:lost_and_found_app/utils/routs.dart';
-import 'package:lost_and_found_app/services/authentication.dart'; // Ensure this import is correct
+import 'package:lost_and_found_app/services/student_authentication.dart'; // Ensure this import is correct
 
 class StudentSignupPage extends StatefulWidget {
   const StudentSignupPage({Key? key}) : super(key: key);
@@ -38,7 +38,7 @@ class _StudentSignupPageState extends State<StudentSignupPage> {
       isLoading = true;
     });
 
-    String res = await AuthServices().studentSignUp(
+    String res = await StudentAuthentication().studentSignUp(
       name: _nameController.text,
       usn: _usnController.text,
       email: _emailController.text,

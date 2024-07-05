@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:lost_and_found_app/services/admin_authentication.dart'; // Import your admin authentication service
+import 'package:lost_and_found_app/pages/admin_student_button_page.dart';
 import 'package:lost_and_found_app/utils/routs.dart';
 
 class AdminHomePage extends StatefulWidget {
@@ -33,80 +35,133 @@ class _AdminHomePageState extends State<AdminHomePage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Home Page'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return CardItem(
-                  title: items[index]['title']!,
-                  description: items[index]['description']!,
-                  imageUrl: items[index]['imageUrl']!,
-                  showDeleteIcon: showDeleteIcon,
-                  onDelete: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: Text('Delete Confirmation'),
-                          content: Text('Do you want to delete this card?'),
-                          actions: [
-                            TextButton(
-                              child: Text('No'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                            TextButton(
-                              child: Text('Yes'),
-                              onPressed: () {
-                                setState(() {
-                                  items.removeAt(index);
-                                });
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  },
-                );
+  void _logout() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Logout"),
+          content: Text("Are you sure you want to logout?"),
+          actions: [
+            TextButton(
+              child: Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
               },
             ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: Container(
-        color: Colors.grey[200],
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Expanded(
-              child: CircleButton(
-                icon: Icons.add,
-                color: Colors.green,
-                onPressed: () {
-                  Navigator.pushNamed(context, MyRouts.lostItemDetailsRout);
-                },
-              ),
+            TextButton(
+              child: Text("Logout"),
+              onPressed: () async {
+                Navigator.of(context).pop(); // Close the dialog
+                await AdminAuthentication().signOut(); // Add your logout logic here
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => AdminStudentButtonPage()));
+              },
             ),
-            Expanded(
-              child: CircleButton(
-                icon: Icons.delete,
-                color: Colors.red,
-                onPressed: toggleDeleteIcons,
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> _onWillPop() async {
+    return false; // Prevent back navigation
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PopScope(
+      
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Admin Home Page'),
+          automaticallyImplyLeading: false, // Remove the back button
+          actions: [
+            GestureDetector(
+              onTap: _logout,
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.red[600],
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.logout,
+                  color: Colors.white,
+                ),
               ),
             ),
           ],
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  return CardItem(
+                    title: items[index]['title']!,
+                    description: items[index]['description']!,
+                    imageUrl: items[index]['imageUrl']!,
+                    showDeleteIcon: showDeleteIcon,
+                    onDelete: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Delete Confirmation'),
+                            content: Text('Do you want to delete this card?'),
+                            actions: [
+                              TextButton(
+                                child: Text('No'),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                              TextButton(
+                                child: Text('Yes'),
+                                onPressed: () {
+                                  setState(() {
+                                    items.removeAt(index);
+                                  });
+                                  Navigator.of(context).pop();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: Container(
+          color: Colors.grey[200],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              Expanded(
+                child: CircleButton(
+                  icon: Icons.add,
+                  color: Colors.green,
+                  onPressed: () {
+                    Navigator.pushNamed(context, MyRouts.lostItemDetailsRout);
+                  },
+                ),
+              ),
+              Expanded(
+                child: CircleButton(
+                  icon: Icons.delete,
+                  color: Colors.red,
+                  onPressed: toggleDeleteIcons,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

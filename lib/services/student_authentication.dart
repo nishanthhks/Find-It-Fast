@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class AuthServices {
+class StudentAuthentication {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  // Student sign up
   Future<String> studentSignUp({
     required String name,
     required String usn,
@@ -41,6 +42,7 @@ class AuthServices {
     return response;
   }
 
+  // Student sign in
   Future<String> studentSignIn({
     required String email,
     required String password,

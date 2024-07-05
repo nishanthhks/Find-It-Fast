@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lost_and_found_app/pages/student_home_page.dart';
-import 'package:lost_and_found_app/services/authentication.dart';
 import 'package:lost_and_found_app/utils/routs.dart';
+import 'package:lost_and_found_app/services/student_authentication.dart';
 
 class StudentLoginPage extends StatefulWidget {
   const StudentLoginPage({Key? key}) : super(key: key);
@@ -33,10 +33,12 @@ class _StudentLoginState extends State<StudentLoginPage> {
         isLoading = true;
       });
 
-      String res = await AuthServices().studentSignIn(
+      String res = await StudentAuthentication().studentSignIn(
         email: _emailController.text,
         password: _passwordController.text,
       );
+
+      if (!mounted) return; // Check if the widget is still mounted
 
       setState(() {
         isLoading = false;
@@ -110,15 +112,17 @@ class _StudentLoginState extends State<StudentLoginPage> {
                   },
                 ),
                 SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      studentSignIn();
-                    }
-                  },
-                  child: Text('Log in'),
-                ),
+                isLoading
+                    ? CircularProgressIndicator() // Show a loading indicator if isLoading is true
+                    : ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            studentSignIn();
+                          }
+                        },
+                        child: Text('Log in'),
+                      ),
                 SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
@@ -142,7 +146,7 @@ class _StudentLoginState extends State<StudentLoginPage> {
 
 void dialogBox(BuildContext context) {
   final TextEditingController _emailController = TextEditingController();
-  final auth = AuthServices();
+  final auth = StudentAuthentication();
 
   showDialog(
     context: context,

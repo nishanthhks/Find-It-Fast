@@ -1,65 +1,227 @@
-import "package:flutter/material.dart";
-import "package:lost_and_found_app/utils/routs.dart";
+import 'package:flutter/material.dart';
+import 'package:lost_and_found_app/pages/admin_home_page.dart';
+import 'package:lost_and_found_app/utils/routs.dart';
+import 'package:lost_and_found_app/services/admin_authentication.dart'; // Import your admin authentication service
 
 class AdminLoginPage extends StatefulWidget {
-  const AdminLoginPage({super.key});
+  const AdminLoginPage({Key? key}) : super(key: key);
 
   @override
   State<AdminLoginPage> createState() => _AdminLoginPageState();
 }
 
 class _AdminLoginPageState extends State<AdminLoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _emailRegex = RegExp(r'^[a-zA-Z0-9_.+-]+@bmsce\.ac\.in$');
+  final _passwordLength = 8;
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void adminSignIn() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+      
+      String res = await AdminAuthentication().adminSignIn(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (!mounted) return; // Check if the widget is still mounted
+
+      setState(() {
+        isLoading = false;
+      });
+
+      if (res == "Sign in successful") {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => AdminHomePage()));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(res),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-        alignment: Alignment.center,
-        child: Column(
-          children: [
-            const SizedBox(height: 150),
-            Image.asset(
-              "assets/images/admin_image.png",
-              fit: BoxFit.contain,
-              height: 250, // Adjust the height as needed
-              width: 250, // Adjust the width as needed
-            ),
-            const SizedBox(height: 50),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50),
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Email',
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Container(
+          height:
+              MediaQuery.of(context).size.height, // Ensure full screen height
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          alignment: Alignment.center,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  "assets/images/admin_image.png",
+                  fit: BoxFit.contain,
+                  height: 250, // Adjust the height as needed
+                  width: 250, // Adjust the width as needed
                 ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50),
-              child: TextField(
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
+                SizedBox(height: 30),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!_emailRegex.hasMatch(value)) {
+                      return 'Email must end with @bmsce.ac.in';
+                    }
+                    return null;
+                  },
                 ),
-              ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    if (value.length < _passwordLength) {
+                      return 'Password must be at least $_passwordLength characters long';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                isLoading
+                    ? CircularProgressIndicator() // Show a loading indicator if isLoading is true
+                    : ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _formKey.currentState!.save();
+                            adminSignIn();
+                          }
+                        },
+                        child: Text('Log in'),
+                      ),
+                SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    dialogBox(context);
+                  },
+                  child: Text('Forgot Password?'),
+                ),
+              ],
             ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Add your logic here
-                Navigator.pushNamed(context, MyRouts.adminHomeRoute);
-              },
-              child: const Text('Submit'),
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () {
-                // Add navigation logic here
-              },
-              child: const Text('Forgot Password?'),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
+
+void dialogBox(BuildContext context) {
+  final TextEditingController _emailController = TextEditingController();
+  final auth = AdminAuthentication();
+
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Forgot Password',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Enter your email to reset your password',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('Close'),
+                  ),
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final email = _emailController.text.trim();
+                      try {
+                        await auth.sendPasswordResetEmail(email: email);
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content:
+                                Text('Password reset email sent to $email'),
+                          ),
+                        );
+                      } catch (error) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Error sending password reset email'),
+                          ),
+                        );
+                      }
+                    },
+                    child: Text('Submit'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
 }
