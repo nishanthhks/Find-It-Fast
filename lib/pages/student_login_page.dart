@@ -132,7 +132,9 @@ class _StudentLoginState extends State<StudentLoginPage> {
                 ),
                 SizedBox(height: 10),
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, MyRouts.studentSignupRout);
+                  },
                   child: Text('Not registered? Sign up'),
                 ),
               ],

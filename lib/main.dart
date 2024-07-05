@@ -9,6 +9,7 @@ import 'package:lost_and_found_app/pages/student_signup_page.dart';
 import 'package:lost_and_found_app/pages/lost_item_details_page.dart';
 import 'package:lost_and_found_app/pages/admin_home_page.dart';
 import 'package:lost_and_found_app/pages/student_home_page.dart';
+import 'package:lost_and_found_app/pages/lost_item_bin_catalog.dart';
 
 import "package:lost_and_found_app/utils/routs.dart";
 import 'package:lost_and_found_app/providers/lost_item_form_provider.dart';
@@ -81,6 +82,7 @@ class MyApp extends StatelessWidget {
           MyRouts.adminHomeRoute: (context) => AdminHomePage(),
           MyRouts.studentHomePageRout: (context) => StudentHomePage(),
           MyRouts.lostItemDetailsRout: (context) => LostItemDetailsPage(),
+          MyRouts.lostItemBinCatalogRout: (context) => LostItemBinCatalog(),
         },
       ),
     );

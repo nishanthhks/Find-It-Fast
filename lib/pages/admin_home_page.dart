@@ -53,8 +53,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
               child: Text("Logout"),
               onPressed: () async {
                 Navigator.of(context).pop(); // Close the dialog
-                await AdminAuthentication().signOut(); // Add your logout logic here
-                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => AdminStudentButtonPage()));
+                await AdminAuthentication()
+                    .signOut(); // Add your logout logic here
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => AdminStudentButtonPage()));
               },
             ),
           ],
@@ -69,8 +71,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      
+    return WillPopScope(
+      onWillPop: _onWillPop,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Admin Home Page'),
@@ -140,25 +142,67 @@ class _AdminHomePageState extends State<AdminHomePage> {
           ],
         ),
         bottomNavigationBar: Container(
-          color: Colors.grey[200],
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          color: const Color.fromARGB(255, 0, 0, 0),
+          padding:
+              EdgeInsets.symmetric(vertical: 10), // Added padding for spacing
+          child: Column(
+            mainAxisSize:
+                MainAxisSize.min, // Ensure Column takes minimum space needed
             children: [
-              Expanded(
-                child: CircleButton(
-                  icon: Icons.add,
-                  color: Colors.green,
-                  onPressed: () {
-                    Navigator.pushNamed(context, MyRouts.lostItemDetailsRout);
-                  },
-                ),
-              ),
-              Expanded(
-                child: CircleButton(
-                  icon: Icons.delete,
-                  color: Colors.red,
-                  onPressed: toggleDeleteIcons,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      CircleButton(
+                        icon: Icons.delete_outline,
+                        color: Colors.blue,
+                        onPressed: () {
+                          // Implement your delete logic here
+                          Navigator.pushNamed(
+                              context, MyRouts.lostItemBinCatalogRout);
+                        },
+                      ),
+                       // Added for spacing between button and text
+                        const Text(
+                        'Bin',
+                        style: TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontSize: 18),
+                        ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      CircleButton(
+                        icon: Icons.add,
+                        color: Colors.green,
+                        onPressed: () {
+                          // Implement your add logic here
+                          Navigator.pushNamed(
+                              context, MyRouts.lostItemDetailsRout);
+                        },
+                      ),
+                      // Added for spacing between button and text
+                      const Text(
+                        'Add',
+                        style: TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontSize: 18),
+                      ),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      CircleButton(
+                        icon: Icons.delete,
+                        color: Colors.red,
+                        onPressed: toggleDeleteIcons,
+                      ),
+                      // Added for spacing between button and text
+                      const Text(
+                        'Delete',
+                        style: TextStyle(color: Color.fromARGB(255, 255, 255, 255), fontSize: 18),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ],
           ),
@@ -222,7 +266,7 @@ class CircleButton extends StatelessWidget {
     return Container(
       width: 70,
       height: 70,
-      margin: EdgeInsets.all(30),
+      margin: EdgeInsets.all(10),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: color,
@@ -233,6 +277,7 @@ class CircleButton extends StatelessWidget {
           color: Colors.white,
         ),
         onPressed: onPressed,
+        tooltip: 'Button Tooltip',
       ),
     );
   }

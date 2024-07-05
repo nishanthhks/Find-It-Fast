@@ -7,4 +7,5 @@ class MyRouts {
   static String studentSignupRout = "/studentSignup";
   static String adminHomeRoute = "/adminHome";
   static String studentHomePageRout = "/studentHomePage";
+  static String lostItemBinCatalogRout = "/lostItemBinCatalog";
 }
