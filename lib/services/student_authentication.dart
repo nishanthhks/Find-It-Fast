@@ -28,6 +28,7 @@ class StudentAuthentication {
         'usn': usn,
         'email': email,
         'uid': userCredential.user!.uid,
+        "role": "student",
       });
 
       response = "User registered successfully";

@@ -1,17 +1,18 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:intl/intl.dart';
-import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
-class LostItemDetailsPage extends StatefulWidget {
+class DetailsStorePage extends StatefulWidget {
+  const DetailsStorePage({Key? key}) : super(key: key);
+
   @override
-  _LostItemDetailsPageState createState() => _LostItemDetailsPageState();
+  State<DetailsStorePage> createState() => _DetailsStorePageState();
 }
 
-class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
+class _DetailsStorePageState extends State<DetailsStorePage> {
   final CollectionReference itemDetails =
       FirebaseFirestore.instance.collection('lost_items');
   final ImagePicker _picker = ImagePicker();
@@ -79,19 +80,9 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
 
   Future<void> saveLostItemDetails(List<String> imageUrls) async {
     try {
-      DateTime now = DateTime.now();
-      String formattedDate = DateFormat('d').format(now) +
-          (now.day % 10 == 1 && now.day != 11
-              ? 'st'
-              : (now.day % 10 == 2 && now.day != 12
-                  ? 'nd'
-                  : (now.day % 10 == 3 && now.day != 13 ? 'rd' : 'th'))) +
-          ' ' +
-          DateFormat('MMMM yyyy, EEEE, h:mm a').format(now);
-
       await itemDetails.add({
         'images': imageUrls,
-        'date': formattedDate,
+        'date': DateTime.now().toString(),
         'floor': floorController.text,
         'class': classController.text,
         'founderEmail': founderEmailController.text,
