@@ -41,8 +41,8 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: StudentHomePage(),
-        // home: _buildAuthStateWidget(),
+        // home: StudentHomePage(),
+        home: _buildAuthStateWidget(),
         routes: {
           MyRouts.adminStudentButtonRout: (context) => AdminStudentButtonPage(),
           MyRouts.adminLoginRout: (context) => AdminLoginPage(),
