@@ -21,6 +21,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
   final TextEditingController founderNameController = TextEditingController();
   final TextEditingController founderUsnController = TextEditingController();
   final TextEditingController founderEmailController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
 
   List<XFile> selectedImages = [];
   bool isLoading = false;
@@ -32,13 +33,13 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
           : [(await _picker.pickImage(source: source))!];
 
       if (pickedFiles != null && pickedFiles.isNotEmpty) {
-        if (selectedImages.length + pickedFiles.length <= 4) {
+        if (selectedImages.length + pickedFiles.length <= 3) {
           setState(() {
             selectedImages.addAll(pickedFiles);
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('You can only select up to 4 images.')),
+            SnackBar(content: Text('You can only select up to 3 images.')),
           );
         }
       }
@@ -80,12 +81,18 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
   Future<void> saveLostItemDetails(List<String> imageUrls) async {
     try {
       DateTime now = DateTime.now();
+      String daySuffix;
+      if (now.day % 10 == 1 && now.day != 11) {
+        daySuffix = 'st';
+      } else if (now.day % 10 == 2 && now.day != 12) {
+        daySuffix = 'nd';
+      } else if (now.day % 10 == 3 && now.day != 13) {
+        daySuffix = 'rd';
+      } else {
+        daySuffix = 'th';
+      }
       String formattedDate = DateFormat('d').format(now) +
-          (now.day % 10 == 1 && now.day != 11
-              ? 'st'
-              : (now.day % 10 == 2 && now.day != 12
-                  ? 'nd'
-                  : (now.day % 10 == 3 && now.day != 13 ? 'rd' : 'th'))) +
+          daySuffix +
           ' ' +
           DateFormat('MMMM yyyy, EEEE, h:mm a').format(now);
 
@@ -97,6 +104,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
         'founderEmail': founderEmailController.text,
         'founderUsn': founderUsnController.text,
         'founderName': founderNameController.text,
+        'description': descriptionController.text,
       });
       print('Details saved to Firestore'); // Debug print
     } catch (e) {
@@ -113,6 +121,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
     final classRegExp = RegExp(r'^\d{3}$');
     final emailRegExp = RegExp(r'^[\w-\.]+@bmsce\.ac\.in$');
     final usnRegExp = RegExp(r'^1BM(2[2-9]|30)(CS|IS)\d{3}$');
+    final descriptionRegExp = RegExp(r'(\w+)', multiLine: true);
 
     if (!floorRegExp.hasMatch(floorController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -149,6 +158,14 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
       );
       return false;
     }
+    if (descriptionRegExp.allMatches(descriptionController.text).length > 50) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                'Description should be limited to 50 words.')),
+      );
+      return false;
+    }
     return true;
   }
 
@@ -181,7 +198,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lost Item Bin Catalog'),
+        title: Text('Lost Item Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -194,7 +211,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
               Row(
                 children: [
                   ElevatedButton.icon(
-                    onPressed: selectedImages.length < 4
+                    onPressed: selectedImages.length < 3
                         ? () => pickImages(ImageSource.gallery)
                         : null,
                     icon: Icon(Icons.photo_library),
@@ -202,7 +219,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
                   ),
                   SizedBox(width: 16),
                   ElevatedButton.icon(
-                    onPressed: selectedImages.length < 4
+                    onPressed: selectedImages.length < 3
                         ? () => pickImages(ImageSource.camera)
                         : null,
                     icon: Icon(Icons.camera_alt),
@@ -264,6 +281,17 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
                 controller: classController,
                 decoration: InputDecoration(labelText: 'Class (Optional)'),
                 keyboardType: TextInputType.number,
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: descriptionController,
+                maxLines: 5,
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(width: 2.0),
+                  ),
+                ),
               ),
               SizedBox(height: 16),
               isLoading
