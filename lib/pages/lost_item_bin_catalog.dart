@@ -58,7 +58,7 @@ class LostItemBinCatalog extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Founder: ${data['founderName']}'),
+                            Text('Finder: ${data['finderName']}'),
                             Text('Date: ${data['date']}'),
                           ],
                         ),
@@ -116,9 +116,9 @@ class CollectedItemDetailsDialog extends StatelessWidget {
                 Text('Description: ${data['description']}'),
                 Text('Floor: ${data['floor']}'),
                 Text('Class: ${data['class']}'),
-                Text('Founder: ${data['founderName']}'),
-                Text('Founder Email: ${data['founderEmail']}'),
-                Text('Founder USN: ${data['founderUsn']}'),
+                Text("Finders's: ${data['finderName']}"),
+                Text("Finders's Email: ${data['finderEmail']}"),
+                Text("Finders's USN: ${data['finderUsn']}"),
                 Text('Date: ${data['date']}'),
                 SizedBox(height: 16),
                 Text('Receiver Name: ${data['receiverName']}'),

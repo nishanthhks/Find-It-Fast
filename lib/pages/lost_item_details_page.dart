@@ -18,9 +18,9 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
 
   final TextEditingController floorController = TextEditingController();
   final TextEditingController classController = TextEditingController();
-  final TextEditingController founderNameController = TextEditingController();
-  final TextEditingController founderUsnController = TextEditingController();
-  final TextEditingController founderEmailController = TextEditingController();
+  final TextEditingController finderNameController = TextEditingController();
+  final TextEditingController finderUsnController = TextEditingController();
+  final TextEditingController finderEmailController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
 
   List<XFile> selectedImages = [];
@@ -59,7 +59,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
         String fileName = DateTime.now().millisecondsSinceEpoch.toString();
         UploadTask uploadTask = FirebaseStorage.instance
             .ref()
-            .child(founderUsnController.text)
+            .child(finderUsnController.text)
             .child(fileName)
             .putFile(file);
 
@@ -101,9 +101,9 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
         'date': formattedDate,
         'floor': floorController.text,
         'class': classController.text,
-        'founderEmail': founderEmailController.text,
-        'founderUsn': founderUsnController.text,
-        'founderName': founderNameController.text,
+        'finderEmail': finderEmailController.text,
+        'finderUsn': finderUsnController.text,
+        'finderName': finderNameController.text,
         'description': descriptionController.text,
       });
       print('Details saved to Firestore'); // Debug print
@@ -137,24 +137,24 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
       );
       return false;
     }
-    if (founderNameController.text.isEmpty) {
+    if (finderNameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Founder\'s name is required.')),
+        SnackBar(content: Text('finder\'s name is required.')),
       );
       return false;
     }
-    if (!emailRegExp.hasMatch(founderEmailController.text)) {
+    if (!emailRegExp.hasMatch(finderEmailController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Founder\'s email should end with @bmsce.ac.in')),
+            content: Text('finder\'s email should end with @bmsce.ac.in')),
       );
       return false;
     }
-    if (!usnRegExp.hasMatch(founderUsnController.text)) {
+    if (!usnRegExp.hasMatch(finderUsnController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
-                'Founder\'s USN format is invalid. Ex: 1BM22CS183, 1BM23IS263')),
+                'finder\'s USN format is invalid. Ex: 1BM22CS183, 1BM23IS263')),
       );
       return false;
     }
@@ -260,17 +260,17 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
                     ),
               SizedBox(height: 16),
               TextField(
-                controller: founderNameController,
-                decoration: InputDecoration(labelText: 'Founder\'s Name'),
+                controller: finderNameController,
+                decoration: InputDecoration(labelText: 'Finder\'s Name'),
               ),
               TextField(
-                controller: founderEmailController,
-                decoration: InputDecoration(labelText: 'Founder\'s Email'),
+                controller: finderEmailController,
+                decoration: InputDecoration(labelText: 'Finder\'s Email'),
                 keyboardType: TextInputType.emailAddress,
               ),
               TextField(
-                controller: founderUsnController,
-                decoration: InputDecoration(labelText: 'Founder\'s USN'),
+                controller: finderUsnController,
+                decoration: InputDecoration(labelText: 'Finder\'s USN'),
               ),
               TextField(
                 controller: floorController,

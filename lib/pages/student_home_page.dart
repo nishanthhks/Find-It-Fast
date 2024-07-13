@@ -97,33 +97,33 @@ class _StudentHomePageState extends State<StudentHomePage> {
                   margin: EdgeInsets.all(16),
                   child: Column(
                     children: [
-                        data['images'].isEmpty
+                      data['images'].isEmpty
                           ? Container(
-                            height: 200,
-                            width: double.infinity,
-                            color: Colors.grey,
-                            child: Center(
-                            child: Text(
-                              'No Image Available',
-                              style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
+                              height: 200,
+                              width: double.infinity,
+                              color: Colors.grey,
+                              child: Center(
+                                child: Text(
+                                  'No Image Available',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                  ),
+                                ),
                               ),
-                            ),
-                            ),
-                          )
+                            )
                           : Image.network(
-                            data['images'][0],
-                            height: 200,
-                            width: double.infinity,
-                            fit: BoxFit.contain,
-                          ),
+                              data['images'][0],
+                              height: 200,
+                              width: double.infinity,
+                              fit: BoxFit.contain,
+                            ),
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Founder: ${data['founderName']}'),
+                            Text('Finder: ${data['finderName']}'),
                             Text('Date: ${data['date']}'),
                           ],
                         ),
@@ -217,9 +217,9 @@ class StudentItemDetailsDialog extends StatelessWidget {
                 Text('Description: ${data['description']}'),
                 Text('Floor: ${data['floor']}'),
                 Text('Class: ${data['class']}'),
-                Text('Founder: ${data['founderName']}'),
-                Text('Founder Email: ${data['founderEmail']}'),
-                Text('Founder USN: ${data['founderUsn']}'),
+                Text("Finder: ${data['finderName']}"),
+                Text("Finder's Email: ${data['finderEmail']}"),
+                Text("Finder's USN: ${data['finderUsn']}"),
                 Text('Date: ${data['date']}'),
               ],
             ),

@@ -94,7 +94,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Founder: ${data['founderName']}'),
+                            Text('Finder: ${data['finderName']}'),
                             Text('Date: ${data['date']}'),
                           ],
                         ),
@@ -250,9 +250,9 @@ class _ItemDetailsDialogState extends State<ItemDetailsDialog> {
                 Text('Description: ${widget.data['description']}'),
                 Text('Floor: ${widget.data['floor']}'),
                 Text('Class: ${widget.data['class']}'),
-                Text('Founder: ${widget.data['founderName']}'),
-                Text('Founder Email: ${widget.data['founderEmail']}'),
-                Text('Founder USN: ${widget.data['founderUsn']}'),
+                Text("Finder's: ${widget.data['finderName']}"),
+                Text("Finder's Email: ${widget.data['finderEmail']}"),
+                Text("Finder's USN: ${widget.data['finderUsn']}"),
                 Text('Date: ${widget.data['date']}'),
                 SizedBox(height: 16),
                 ElevatedButton(

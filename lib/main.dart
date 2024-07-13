@@ -44,6 +44,7 @@ class MyApp extends StatelessWidget {
         // home: StudentHomePage(),
         home: _buildAuthStateWidget(),
         routes: {
+          // "/": (context) => _buildAuthStateWidget(),
           MyRouts.adminStudentButtonRout: (context) => AdminStudentButtonPage(),
           MyRouts.adminLoginRout: (context) => AdminLoginPage(),
           MyRouts.studentLoginRout: (context) => StudentLoginPage(),
