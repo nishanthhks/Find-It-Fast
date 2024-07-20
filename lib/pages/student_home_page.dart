@@ -11,7 +11,7 @@ class StudentHomePage extends StatefulWidget {
 
 class _StudentHomePageState extends State<StudentHomePage> {
   final CollectionReference lostItemsCollection =
-      FirebaseFirestore.instance.collection('lost_items');
+  FirebaseFirestore.instance.collection('lost_items');
 
   void _logout() {
     showDialog(
@@ -19,23 +19,45 @@ class _StudentHomePageState extends State<StudentHomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Logout"),
-          content: Text("Are you sure you want to logout?"),
+          backgroundColor: Colors.white, // Set background color to white
+          content: Text(
+            "Are you sure you want to logout?",
+            style: TextStyle(color: Colors.black), // Content text color
+          ),
           actions: [
-            TextButton(
-              child: Text("Cancel"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black, // Button background color
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: TextButton(
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: Colors.white), // Button text color
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
             ),
-            TextButton(
-              child: Text("Logout"),
-              onPressed: () async {
-                Navigator.of(context).pop(); // Close the dialog
-                await StudentAuthentication()
-                    .signOut(); // Go back to previous screen
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                    builder: (context) => AdminStudentButtonPage()));
-              },
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black, // Button background color
+                borderRadius: BorderRadius.circular(3),
+              ),
+              child: TextButton(
+                child: Text(
+                  "Logout",
+                  style: TextStyle(color: Colors.white), // Button text color
+                ),
+                onPressed: () async {
+                  Navigator.of(context).pop(); // Close the dialog
+                  await StudentAuthentication()
+                      .signOut(); // Go back to previous screen
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => AdminStudentButtonPage()));
+                },
+              ),
             ),
           ],
         );
@@ -47,7 +69,11 @@ class _StudentHomePageState extends State<StudentHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Student Home Page'),
+        title: Text(
+          'LOST ITEMS',
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false, // Remove the back button
         actions: [
           GestureDetector(
@@ -56,7 +82,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               margin: EdgeInsets.symmetric(horizontal: 7),
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
-                color: Colors.red[600], // Light red color
+                color: Colors.black, // Changed to black background
                 shape: BoxShape.rectangle,
               ),
               child: Row(
@@ -94,37 +120,50 @@ class _StudentHomePageState extends State<StudentHomePage> {
               return GestureDetector(
                 onTap: () => _showItemDialog(context, data),
                 child: Card(
+                  elevation: 5,
                   margin: EdgeInsets.all(16),
-                  child: Column(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      data['images'].isEmpty
-                          ? Container(
-                              height: 200,
-                              width: double.infinity,
-                              color: Colors.grey,
-                              child: Center(
-                                child: Text(
-                                  'No Image Available',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Image.network(
-                              data['images'][0],
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.contain,
+                      Container(
+                        width: 100,
+                        height: 100,
+                        color: Colors.grey,
+                        child: data['images'].isEmpty
+                            ? Center(
+                          child: Text(
+                            'No Image Available',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
                             ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
+                          ),
+                        )
+                            : Image.network(
+                          data['images'][0],
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      SizedBox(width: 16),
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Finder: ${data['finderName']}'),
-                            Text('Date: ${data['date']}'),
+                            Text(
+                              'Finder: ${data['finderName']}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Date: ${data['date']}',
+                              style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                fontSize: 14,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -136,38 +175,20 @@ class _StudentHomePageState extends State<StudentHomePage> {
           );
         },
       ),
-      bottomNavigationBar: Container(
-        color: const Color.fromARGB(255, 0, 0, 0),
-        padding:
-            EdgeInsets.symmetric(vertical: 10), // Added padding for spacing
-        child: Column(
-          mainAxisSize:
-              MainAxisSize.min, // Ensure Column takes minimum space needed
+      bottomNavigationBar: BottomAppBar(
+        elevation: 10,
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    CircleButton(
-                      icon: Icons.delete_outline,
-                      color: Colors.blue,
-                      onPressed: () {
-                        // Implement your delete logic here
-                        Navigator.pushNamed(
-                            context, MyRouts.lostItemBinCatalogRout);
-                      },
-                    ),
-                    // Added for spacing between button and text
-                    const Text(
-                      'Bin',
-                      style: TextStyle(
-                          color: Color.fromARGB(255, 255, 255, 255),
-                          fontSize: 18),
-                    ),
-                  ],
-                ),
-              ],
+            IconButton(
+              icon: Icon(Icons.delete_outline),
+              onPressed: () {
+                // Implement your delete logic here
+                Navigator.pushNamed(context, MyRouts.lostItemBinCatalogRout);
+              },
+              tooltip: 'Delete Items',
+              color: Colors.black,
             ),
           ],
         ),
@@ -194,6 +215,7 @@ class StudentItemDetailsDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             height: 300,
@@ -202,9 +224,7 @@ class StudentItemDetailsDialog extends StatelessWidget {
               itemBuilder: (context, index) {
                 return Image.network(
                   data['images'][index],
-                  fit: BoxFit.contain,
-                  height: double.infinity,
-                  width: double.infinity,
+                  fit: BoxFit.cover,
                 );
               },
             ),
@@ -214,50 +234,51 @@ class StudentItemDetailsDialog extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Description: ${data['description']}'),
-                Text('Floor: ${data['floor']}'),
-                Text('Class: ${data['class']}'),
-                Text("Finder: ${data['finderName']}"),
-                Text("Finder's Email: ${data['finderEmail']}"),
-                Text("Finder's USN: ${data['finderUsn']}"),
-                Text('Date: ${data['date']}'),
+                Text(
+                  'Description:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data['description']),
+                SizedBox(height: 12),
+                Text(
+                  'Floor:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data['floor']),
+                SizedBox(height: 12),
+                Text(
+                  'Class:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data['class']),
+                SizedBox(height: 12),
+                Text(
+                  "Finder:",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data['finderName']),
+                SizedBox(height: 12),
+                Text(
+                  "Finder's Email:",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data['finderEmail']),
+                SizedBox(height: 12),
+                Text(
+                  "Finder's USN:",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data['finderUsn']),
+                SizedBox(height: 12),
+                Text(
+                  'Date:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(data['date']),
               ],
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class CircleButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final VoidCallback onPressed;
-
-  const CircleButton({
-    required this.icon,
-    required this.color,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 70,
-      height: 70,
-      margin: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: color,
-      ),
-      child: IconButton(
-        icon: Icon(
-          icon,
-          color: Colors.white,
-        ),
-        onPressed: onPressed,
-        tooltip: 'Button Tooltip',
       ),
     );
   }

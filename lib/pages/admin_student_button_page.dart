@@ -1,5 +1,5 @@
-import "package:flutter/material.dart";
-import "package:lost_and_found_app/utils/routs.dart";
+import 'package:flutter/material.dart';
+import 'package:lost_and_found_app/utils/routs.dart';
 
 class AdminStudentButtonPage extends StatefulWidget {
   const AdminStudentButtonPage({Key? key});
@@ -16,32 +16,31 @@ class _AdminStudentButtonPage extends State<AdminStudentButtonPage> {
       child: Column(
         children: [
           const SizedBox(height: 100),
-          Image.asset(
-            "assets/images/search_image.png",
-            fit: BoxFit.contain,
-            height: 300, // Adjust the height as needed
-            width: 300, // Adjust the width as needed
-          ),
-          const SizedBox(height: 50),
           const Text(
-            "Welcome",
+            "LOST AND FOUND",
             style: TextStyle(
                 fontSize: 40,
                 fontWeight: FontWeight.bold,
                 color: Colors.black54),
           ),
           const SizedBox(height: 50),
+          Image.asset(
+            "assets/images/search_image.png",
+            fit: BoxFit.contain,
+            height: 300, // Adjust the height as needed
+            width: 300, // Adjust the width as needed
+          ),
+          const SizedBox(height: 120),
           InkWell(
             onTap: () {
               Navigator.pushNamed(context, MyRouts.adminLoginRout);
-
             },
             child: Container(
                 width: 300,
                 height: 50,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.blue[600],
+                  color: Colors.black,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(
@@ -56,24 +55,23 @@ class _AdminStudentButtonPage extends State<AdminStudentButtonPage> {
           InkWell(
             onTap: () {
               Navigator.pushNamed(context, MyRouts.studentLoginRout);
-              
             },
             child: Container(
                 width: 300,
                 height: 50,
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: Colors.green[600],
+                  color: Colors.black,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Text(
-                  "student",
+                  "Student",
                   style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
                       fontSize: 20),
                 )),
-          )
+          ),
         ],
       ),
     );

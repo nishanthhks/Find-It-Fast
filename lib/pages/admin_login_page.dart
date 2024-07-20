@@ -32,7 +32,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       setState(() {
         isLoading = true;
       });
-      
+
       String res = await AdminAuthentication().adminSignIn(
         email: _emailController.text,
         password: _passwordController.text,
@@ -60,10 +60,10 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          height:
-              MediaQuery.of(context).size.height, // Ensure full screen height
+          height: MediaQuery.of(context).size.height, // Ensure full screen height
           padding: EdgeInsets.symmetric(horizontal: 20),
           alignment: Alignment.center,
           child: Form(
@@ -72,6 +72,16 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(height: 0), // Space above the "Admin Login" text
+                Text(
+                  'Admin Login',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(height: 20),
                 Image.asset(
                   "assets/images/admin_image.png",
                   fit: BoxFit.contain,
@@ -83,6 +93,10 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -100,6 +114,10 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -115,20 +133,27 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 isLoading
                     ? CircularProgressIndicator() // Show a loading indicator if isLoading is true
                     : ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            adminSignIn();
-                          }
-                        },
-                        child: Text('Log in'),
-                      ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black, // Background color
+                    foregroundColor: Colors.white, // Text color
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      adminSignIn();
+                    }
+                  },
+                  child: Text('Log in'),
+                ),
                 SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
                     dialogBox(context);
                   },
-                  child: Text('Forgot Password?'),
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
               ],
             ),
@@ -180,6 +205,7 @@ void dialogBox(BuildContext context) {
                   labelText: 'Email',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
               ),
@@ -188,6 +214,10 @@ void dialogBox(BuildContext context) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black, // Background color
+                      foregroundColor: Colors.white, // Text color
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -195,6 +225,10 @@ void dialogBox(BuildContext context) {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black, // Background color
+                      foregroundColor: Colors.white, // Text color
+                    ),
                     onPressed: () async {
                       final email = _emailController.text.trim();
                       try {
@@ -203,7 +237,7 @@ void dialogBox(BuildContext context) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content:
-                                Text('Password reset email sent to $email'),
+                            Text('Password reset email sent to $email'),
                           ),
                         );
                       } catch (error) {

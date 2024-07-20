@@ -60,10 +60,10 @@ class _StudentLoginState extends State<StudentLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          height:
-              MediaQuery.of(context).size.height, // Ensure full screen height
+          height: MediaQuery.of(context).size.height, // Ensure full screen height
           padding: EdgeInsets.symmetric(horizontal: 20),
           alignment: Alignment.center,
           child: Form(
@@ -72,6 +72,16 @@ class _StudentLoginState extends State<StudentLoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(height: 40), // Space above the "Student Login" text
+                Text(
+                  'Student Login',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                SizedBox(height: 20),
                 Image.asset(
                   "assets/images/student_image.png",
                   fit: BoxFit.contain,
@@ -83,6 +93,10 @@ class _StudentLoginState extends State<StudentLoginPage> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -100,6 +114,10 @@ class _StudentLoginState extends State<StudentLoginPage> {
                   obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -115,27 +133,37 @@ class _StudentLoginState extends State<StudentLoginPage> {
                 isLoading
                     ? CircularProgressIndicator() // Show a loading indicator if isLoading is true
                     : ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            _formKey.currentState!.save();
-                            studentSignIn();
-                          }
-                        },
-                        child: Text('Log in'),
-                      ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black, // Background color
+                    foregroundColor: Colors.white, // Text color
+                  ),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      studentSignIn();
+                    }
+                  },
+                  child: Text('Log in'),
+                ),
                 SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
                     dialogBox(context);
                   },
-                  child: Text('Forgot Password?'),
+                  child: Text(
+                    'Forgot Password?',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
                 SizedBox(height: 10),
                 TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, MyRouts.studentSignupRout);
                   },
-                  child: Text('Not registered? Sign up'),
+                  child: Text(
+                    'Not registered? Sign up',
+                    style: TextStyle(color: Colors.black),
+                  ),
                 ),
               ],
             ),
@@ -187,6 +215,7 @@ void dialogBox(BuildContext context) {
                   labelText: 'Email',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.black),
                   ),
                 ),
               ),
@@ -195,6 +224,10 @@ void dialogBox(BuildContext context) {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black, // Background color
+                      foregroundColor: Colors.white, // Text color
+                    ),
                     onPressed: () {
                       Navigator.pop(context);
                     },
@@ -202,6 +235,10 @@ void dialogBox(BuildContext context) {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black, // Background color
+                      foregroundColor: Colors.white, // Text color
+                    ),
                     onPressed: () async {
                       final email = _emailController.text.trim();
                       try {
@@ -210,7 +247,7 @@ void dialogBox(BuildContext context) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content:
-                                Text('Password reset email sent to $email'),
+                            Text('Password reset email sent to $email'),
                           ),
                         );
                       } catch (error) {

@@ -139,14 +139,13 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
     }
     if (finderNameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('finder\'s name is required.')),
+        SnackBar(content: Text('Finder\'s name is required.')),
       );
       return false;
     }
     if (!emailRegExp.hasMatch(finderEmailController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('finder\'s email should end with @bmsce.ac.in')),
+        SnackBar(content: Text('Finder\'s email should end with @bmsce.ac.in')),
       );
       return false;
     }
@@ -154,15 +153,13 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(
-                'finder\'s USN format is invalid. Ex: 1BM22CS183, 1BM23IS263')),
+                'Finder\'s USN format is invalid. Ex: 1BM22CS183, 1BM23IS263')),
       );
       return false;
     }
     if (descriptionRegExp.allMatches(descriptionController.text).length > 50) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                'Description should be limited to 50 words.')),
+        SnackBar(content: Text('Description should be limited to 50 words.')),
       );
       return false;
     }
@@ -206,7 +203,8 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Add Photos', style: TextStyle(fontSize: 18)),
+              Text('Add Photos',
+                  style: TextStyle(fontSize: 18, color: Colors.black)),
               SizedBox(height: 8),
               Row(
                 children: [
@@ -215,7 +213,8 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
                         ? () => pickImages(ImageSource.gallery)
                         : null,
                     icon: Icon(Icons.photo_library),
-                    label: Text('From Gallery'),
+                    label: Text('From Gallery',
+                        style: TextStyle(fontSize: 15, color: Colors.black)),
                   ),
                   SizedBox(width: 16),
                   ElevatedButton.icon(
@@ -223,13 +222,15 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
                         ? () => pickImages(ImageSource.camera)
                         : null,
                     icon: Icon(Icons.camera_alt),
-                    label: Text('From Camera'),
+                    label: Text('From Camera',
+                        style: TextStyle(fontSize: 15, color: Colors.black)),
                   ),
                 ],
               ),
               SizedBox(height: 16),
               selectedImages.isEmpty
-                  ? Text('No images selected.')
+                  ? Text('No images selected.',
+                      style: TextStyle(color: Colors.black))
                   : Wrap(
                       spacing: 8.0,
                       runSpacing: 8.0,
@@ -261,25 +262,74 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
               SizedBox(height: 16),
               TextField(
                 controller: finderNameController,
-                decoration: InputDecoration(labelText: 'Finder\'s Name'),
+                decoration: InputDecoration(
+                  labelText: 'Finder\'s Name',
+                  labelStyle: TextStyle(color: Colors.black),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                ),
               ),
+              SizedBox(height: 8),
               TextField(
                 controller: finderEmailController,
-                decoration: InputDecoration(labelText: 'Finder\'s Email'),
+                decoration: InputDecoration(
+                  labelText: 'Finder\'s Email',
+                  labelStyle: TextStyle(color: Colors.black),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                ),
                 keyboardType: TextInputType.emailAddress,
               ),
+              SizedBox(height: 8),
               TextField(
                 controller: finderUsnController,
-                decoration: InputDecoration(labelText: 'Finder\'s USN'),
+                decoration: InputDecoration(
+                  labelText: 'Finder\'s USN',
+                  labelStyle: TextStyle(color: Colors.black),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                ),
               ),
+              SizedBox(height: 8),
               TextField(
                 controller: floorController,
-                decoration: InputDecoration(labelText: 'Floor'),
+                decoration: InputDecoration(
+                  labelText: 'Floor',
+                  labelStyle: TextStyle(color: Colors.black),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                ),
                 keyboardType: TextInputType.number,
               ),
+              SizedBox(height: 8),
               TextField(
                 controller: classController,
-                decoration: InputDecoration(labelText: 'Class (Optional)'),
+                decoration: InputDecoration(
+                  labelText: 'Class (Optional)',
+                  labelStyle: TextStyle(color: Colors.black),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black),
+                  ),
+                ),
                 keyboardType: TextInputType.number,
               ),
               SizedBox(height: 16),
@@ -288,18 +338,27 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
                 maxLines: 5,
                 decoration: InputDecoration(
                   labelText: 'Description',
+                  labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(
-                    borderSide: BorderSide(width: 2.0),
+                    borderSide: BorderSide(color: Colors.black, width: 2.0),
                   ),
                 ),
               ),
               SizedBox(height: 16),
-              isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: handleSubmit,
-                      child: Text('Submit'),
-                    ),
+              Center(
+                child: isLoading
+                    ? CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: handleSubmit,
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.black),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white),
+                        ),
+                        child: Text('Submit'),
+                      ),
+              ),
             ],
           ),
         ),
