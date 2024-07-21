@@ -27,7 +27,7 @@ class _StudentLoginState extends State<StudentLoginPage> {
     super.dispose();
   }
 
-  void studentSignIn() async {
+  Future<void> studentSignIn() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         isLoading = true;
@@ -38,7 +38,7 @@ class _StudentLoginState extends State<StudentLoginPage> {
         password: _passwordController.text,
       );
 
-      if (!mounted) return; // Check if the widget is still mounted
+      if (!mounted) return;
 
       setState(() {
         isLoading = false;
@@ -63,7 +63,7 @@ class _StudentLoginState extends State<StudentLoginPage> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height, // Ensure full screen height
+          height: MediaQuery.of(context).size.height,
           padding: EdgeInsets.symmetric(horizontal: 20),
           alignment: Alignment.center,
           child: Form(
@@ -72,7 +72,7 @@ class _StudentLoginState extends State<StudentLoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 40), // Space above the "Student Login" text
+                SizedBox(height: 40),
                 Text(
                   'Student Login',
                   style: TextStyle(
@@ -85,19 +85,14 @@ class _StudentLoginState extends State<StudentLoginPage> {
                 Image.asset(
                   "assets/images/student_image.png",
                   fit: BoxFit.contain,
-                  height: 250, // Adjust the height as needed
-                  width: 250, // Adjust the width as needed
+                  height: 250,
+                  width: 250,
                 ),
                 SizedBox(height: 30),
-                TextFormField(
+                _buildTextField(
                   controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                  ),
+                  label: 'Email',
+                  obscureText: false,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
@@ -109,16 +104,10 @@ class _StudentLoginState extends State<StudentLoginPage> {
                   },
                 ),
                 SizedBox(height: 20),
-                TextFormField(
+                _buildTextField(
                   controller: _passwordController,
+                  label: 'Password',
                   obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                  ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your password';
@@ -131,44 +120,73 @@ class _StudentLoginState extends State<StudentLoginPage> {
                 ),
                 SizedBox(height: 20),
                 isLoading
-                    ? CircularProgressIndicator() // Show a loading indicator if isLoading is true
-                    : ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black, // Background color
-                    foregroundColor: Colors.white, // Text color
-                  ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      studentSignIn();
-                    }
-                  },
-                  child: Text('Log in'),
+                    ? CircularProgressIndicator()
+                    : _buildElevatedButton(
+                        label: 'Log in',
+                        onPressed: studentSignIn,
+                      ),
+                SizedBox(height: 10),
+                _buildTextButton(
+                  label: 'Forgot Password?',
+                  onPressed: () => dialogBox(context),
                 ),
                 SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    dialogBox(context);
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, MyRouts.studentSignupRout);
-                  },
-                  child: Text(
-                    'Not registered? Sign up',
-                    style: TextStyle(color: Colors.black),
-                  ),
+                _buildTextButton(
+                  label: 'Not registered? Sign up',
+                  onPressed: () => Navigator.pushNamed(
+                      context, MyRouts.studentSignupRout),
                 ),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required bool obscureText,
+    required String? Function(String?) validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: BorderSide(color: Colors.black),
+        ),
+      ),
+      validator: validator,
+    );
+  }
+
+  Widget _buildElevatedButton({
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
+      onPressed: onPressed,
+      child: Text(label),
+    );
+  }
+
+  Widget _buildTextButton({
+    required String label,
+    required VoidCallback onPressed,
+  }) {
+    return TextButton(
+      onPressed: onPressed,
+      child: Text(
+        label,
+        style: TextStyle(color: Colors.black),
       ),
     );
   }
@@ -186,10 +204,6 @@ void dialogBox(BuildContext context) {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
           padding: EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -204,9 +218,7 @@ void dialogBox(BuildContext context) {
               const SizedBox(height: 20),
               const Text(
                 'Enter your email to reset your password',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 20),
               TextField(
@@ -223,22 +235,13 @@ void dialogBox(BuildContext context) {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black, // Background color
-                      foregroundColor: Colors.white, // Text color
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Close'),
+                  _buildDialogButton(
+                    label: 'Close',
+                    onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black, // Background color
-                      foregroundColor: Colors.white, // Text color
-                    ),
+                  _buildDialogButton(
+                    label: 'Submit',
                     onPressed: () async {
                       final email = _emailController.text.trim();
                       try {
@@ -246,8 +249,7 @@ void dialogBox(BuildContext context) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content:
-                            Text('Password reset email sent to $email'),
+                            content: Text('Password reset email sent to $email'),
                           ),
                         );
                       } catch (error) {
@@ -258,7 +260,6 @@ void dialogBox(BuildContext context) {
                         );
                       }
                     },
-                    child: Text('Submit'),
                   ),
                 ],
               ),
@@ -267,5 +268,19 @@ void dialogBox(BuildContext context) {
         ),
       );
     },
+  );
+}
+
+Widget _buildDialogButton({
+  required String label,
+  required VoidCallback onPressed,
+}) {
+  return ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.black,
+      foregroundColor: Colors.white,
+    ),
+    onPressed: onPressed,
+    child: Text(label),
   );
 }

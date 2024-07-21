@@ -12,8 +12,7 @@ class LostItemDetailsPage extends StatefulWidget {
 }
 
 class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
-  final CollectionReference itemDetails =
-      FirebaseFirestore.instance.collection('lost_items');
+  final CollectionReference itemDetails = FirebaseFirestore.instance.collection('lost_items');
   final ImagePicker _picker = ImagePicker();
 
   final TextEditingController floorController = TextEditingController();
@@ -39,7 +38,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
           });
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('You can only select up to 3 images.')),
+            const SnackBar(content: Text('You can only select up to 3 images.')),
           );
         }
       }
@@ -81,16 +80,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
   Future<void> saveLostItemDetails(List<String> imageUrls) async {
     try {
       DateTime now = DateTime.now();
-      String daySuffix;
-      if (now.day % 10 == 1 && now.day != 11) {
-        daySuffix = 'st';
-      } else if (now.day % 10 == 2 && now.day != 12) {
-        daySuffix = 'nd';
-      } else if (now.day % 10 == 3 && now.day != 13) {
-        daySuffix = 'rd';
-      } else {
-        daySuffix = 'th';
-      }
+      String daySuffix = _getDaySuffix(now.day);
       String formattedDate = DateFormat('d').format(now) +
           daySuffix +
           ' ' +
@@ -116,6 +106,18 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
     }
   }
 
+  String _getDaySuffix(int day) {
+    if (day % 10 == 1 && day != 11) {
+      return 'st';
+    } else if (day % 10 == 2 && day != 12) {
+      return 'nd';
+    } else if (day % 10 == 3 && day != 13) {
+      return 'rd';
+    } else {
+      return 'th';
+    }
+  }
+
   bool validateForm() {
     final floorRegExp = RegExp(r'^[1-9]$');
     final classRegExp = RegExp(r'^\d{3}$');
@@ -125,41 +127,38 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
 
     if (!floorRegExp.hasMatch(floorController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Floor should be a single digit, e.g., 1, 2.')),
+        const SnackBar(content: Text('Floor should be a single digit, e.g., 1, 2.')),
       );
       return false;
     }
     if (classController.text.isNotEmpty &&
         !classRegExp.hasMatch(classController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Class should be a 3-digit number, e.g., 201, 305.')),
+        const SnackBar(content: Text('Class should be a 3-digit number, e.g., 201, 305.')),
       );
       return false;
     }
     if (finderNameController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Finder\'s name is required.')),
+        const SnackBar(content: Text('Finder\'s name is required.')),
       );
       return false;
     }
     if (!emailRegExp.hasMatch(finderEmailController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Finder\'s email should end with @bmsce.ac.in')),
+        const SnackBar(content: Text('Finder\'s email should end with @bmsce.ac.in')),
       );
       return false;
     }
     if (!usnRegExp.hasMatch(finderUsnController.text)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                'Finder\'s USN format is invalid. Ex: 1BM22CS183, 1BM23IS263')),
+        const SnackBar(content: Text('Finder\'s USN format is invalid. Ex: 1BM22CS183, 1BM23IS263')),
       );
       return false;
     }
-    if (descriptionRegExp.allMatches(descriptionController.text).length > 50) {
+    if (descriptionController.text.trim().split(RegExp(r'\s+')).length > 50) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Description should be limited to 50 words.')),
+        const SnackBar(content: Text('Description should be limited to 50 words.')),
       );
       return false;
     }
@@ -177,7 +176,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
       List<String> imageUrls = await uploadImages();
       await saveLostItemDetails(imageUrls);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Item details saved successfully!')),
+        const SnackBar(content: Text('Item details saved successfully!')),
       );
       Navigator.of(context).pop();
     } catch (e) {
@@ -195,7 +194,7 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lost Item Details'),
+        title: const Text('Lost Item Details'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -203,151 +202,65 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Add Photos',
-                  style: TextStyle(fontSize: 18, color: Colors.black)),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: selectedImages.length < 3
-                        ? () => pickImages(ImageSource.gallery)
-                        : null,
-                    icon: Icon(Icons.photo_library),
-                    label: Text('From Gallery',
-                        style: TextStyle(fontSize: 15, color: Colors.black)),
-                  ),
-                  SizedBox(width: 16),
-                  ElevatedButton.icon(
-                    onPressed: selectedImages.length < 3
-                        ? () => pickImages(ImageSource.camera)
-                        : null,
-                    icon: Icon(Icons.camera_alt),
-                    label: Text('From Camera',
-                        style: TextStyle(fontSize: 15, color: Colors.black)),
-                  ),
-                ],
+              const SectionTitle(title: 'Add Photos'),
+              const SizedBox(height: 8),
+              ImagePickerRow(
+                pickImages: pickImages,
+                selectedImages: selectedImages,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               selectedImages.isEmpty
-                  ? Text('No images selected.',
+                  ? const Text('No images selected.',
                       style: TextStyle(color: Colors.black))
-                  : Wrap(
-                      spacing: 8.0,
-                      runSpacing: 8.0,
-                      children: selectedImages
-                          .map((image) => Stack(
-                                children: [
-                                  Image.file(
-                                    File(image.path),
-                                    width: 100,
-                                    height: 100,
-                                    fit: BoxFit.cover,
-                                  ),
-                                  Positioned(
-                                    right: 0,
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          selectedImages.remove(image);
-                                        });
-                                      },
-                                      child: Icon(Icons.remove_circle,
-                                          color: Colors.red),
-                                    ),
-                                  ),
-                                ],
-                              ))
-                          .toList(),
+                  : SelectedImagesGrid(
+                      selectedImages: selectedImages,
+                      onRemove: (image) {
+                        setState(() {
+                          selectedImages.remove(image);
+                        });
+                      },
                     ),
-              SizedBox(height: 16),
-              TextField(
+              const SizedBox(height: 16),
+              CustomTextField(
                 controller: finderNameController,
-                decoration: InputDecoration(
-                  labelText: 'Finder\'s Name',
-                  labelStyle: TextStyle(color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
+                label: 'Finder\'s Name',
+                keyboardType: TextInputType.text,
               ),
-              SizedBox(height: 8),
-              TextField(
+              const SizedBox(height: 8),
+              CustomTextField(
                 controller: finderEmailController,
-                decoration: InputDecoration(
-                  labelText: 'Finder\'s Email',
-                  labelStyle: TextStyle(color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
+                label: 'Finder\'s Email',
                 keyboardType: TextInputType.emailAddress,
               ),
-              SizedBox(height: 8),
-              TextField(
+              const SizedBox(height: 8),
+              CustomTextField(
                 controller: finderUsnController,
-                decoration: InputDecoration(
-                  labelText: 'Finder\'s USN',
-                  labelStyle: TextStyle(color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
+                label: 'Finder\'s USN',
+                keyboardType: TextInputType.text,
               ),
-              SizedBox(height: 8),
-              TextField(
+              const SizedBox(height: 8),
+              CustomTextField(
                 controller: floorController,
-                decoration: InputDecoration(
-                  labelText: 'Floor',
-                  labelStyle: TextStyle(color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
+                label: 'Floor',
                 keyboardType: TextInputType.number,
               ),
-              SizedBox(height: 8),
-              TextField(
+              const SizedBox(height: 8),
+              CustomTextField(
                 controller: classController,
-                decoration: InputDecoration(
-                  labelText: 'Class (Optional)',
-                  labelStyle: TextStyle(color: Colors.black),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
+                label: 'Class (Optional)',
                 keyboardType: TextInputType.number,
               ),
-              SizedBox(height: 16),
-              TextField(
+              const SizedBox(height: 16),
+              CustomTextField(
                 controller: descriptionController,
+                label: 'Description',
+                keyboardType: TextInputType.multiline,
                 maxLines: 5,
-                decoration: InputDecoration(
-                  labelText: 'Description',
-                  labelStyle: TextStyle(color: Colors.black),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.black, width: 2.0),
-                  ),
-                ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Center(
                 child: isLoading
-                    ? CircularProgressIndicator()
+                    ? const CircularProgressIndicator()
                     : ElevatedButton(
                         onPressed: handleSubmit,
                         style: ButtonStyle(
@@ -356,13 +269,126 @@ class _LostItemDetailsPageState extends State<LostItemDetailsPage> {
                           foregroundColor:
                               MaterialStateProperty.all<Color>(Colors.white),
                         ),
-                        child: Text('Submit'),
+                        child: const Text('Submit'),
                       ),
               ),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class SectionTitle extends StatelessWidget {
+  final String title;
+
+  const SectionTitle({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: const TextStyle(fontSize: 18, color: Colors.black),
+    );
+  }
+}
+
+class ImagePickerRow extends StatelessWidget {
+  final Function(ImageSource) pickImages;
+  final List<XFile> selectedImages;
+
+  const ImagePickerRow({required this.pickImages, required this.selectedImages});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        ElevatedButton.icon(
+          onPressed: selectedImages.length < 3
+              ? () => pickImages(ImageSource.gallery)
+              : null,
+          icon: const Icon(Icons.photo_library),
+          label: const Text('From Gallery',
+              style: TextStyle(fontSize: 15, color: Colors.black)),
+        ),
+        const SizedBox(width: 16),
+        ElevatedButton.icon(
+          onPressed: selectedImages.length < 3
+              ? () => pickImages(ImageSource.camera)
+              : null,
+          icon: const Icon(Icons.camera_alt),
+          label: const Text('From Camera',
+              style: TextStyle(fontSize: 15, color: Colors.black)),
+        ),
+      ],
+    );
+  }
+}
+
+class SelectedImagesGrid extends StatelessWidget {
+  final List<XFile> selectedImages;
+  final Function(XFile) onRemove;
+
+  const SelectedImagesGrid({required this.selectedImages, required this.onRemove});
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 8.0,
+      children: selectedImages
+          .map((image) => Stack(
+                children: [
+                  Image.file(
+                    File(image.path),
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                  ),
+                  Positioned(
+                    right: 0,
+                    child: GestureDetector(
+                      onTap: () => onRemove(image),
+                      child: const Icon(Icons.remove_circle, color: Colors.red),
+                    ),
+                  ),
+                ],
+              ))
+          .toList(),
+    );
+  }
+}
+
+class CustomTextField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+  final TextInputType keyboardType;
+  final int maxLines;
+
+  const CustomTextField({
+    required this.controller,
+    required this.label,
+    this.keyboardType = TextInputType.text,
+    this.maxLines = 1,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.black),
+        enabledBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.black),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.black),
+        ),
+      ),
+      keyboardType: keyboardType,
+      maxLines: maxLines,
     );
   }
 }

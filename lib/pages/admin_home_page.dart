@@ -5,194 +5,47 @@ import 'package:lost_and_found_app/pages/admin_student_button_page.dart';
 import 'package:lost_and_found_app/utils/routs.dart';
 
 class AdminHomePage extends StatefulWidget {
+  const AdminHomePage({super.key});
+
   @override
   _AdminHomePageState createState() => _AdminHomePageState();
 }
 
 class _AdminHomePageState extends State<AdminHomePage> {
   final CollectionReference lostItemsCollection =
-  FirebaseFirestore.instance.collection('lost_items');
+      FirebaseFirestore.instance.collection('lost_items');
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('LOST ITEMS'),
+        title: const Text('LOST ITEMS'),
         backgroundColor: Colors.white,
-        automaticallyImplyLeading: false, // Remove the back button
-        actions: [
-          GestureDetector(
-            onTap: _logout,
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 7),
-              padding: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: Colors.red[600], // Light red color
-                shape: BoxShape.rectangle,
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.logout,
-                    color: Colors.white, // White icon color
-                  ),
-                  SizedBox(width: 5),
-                  Text(
-                    "Logout",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+        automaticallyImplyLeading: false,
+        actions: [LogoutButton()],
       ),
       body: Column(
         children: [
-          Expanded(
-            child: StreamBuilder<QuerySnapshot>(
-              stream: lostItemsCollection.snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                }
-                if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                }
-                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                  return Center(child: Text('No lost items found.'));
-                }
-                return ListView(
-                  children: snapshot.data!.docs.map((doc) {
-                    Map<String, dynamic> data =
-                    doc.data() as Map<String, dynamic>;
-                    return GestureDetector(
-                      onTap: () => _showItemDialog(context, doc.id, data),
-                      child: Card(
-                        margin: EdgeInsets.all(16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                        elevation: 5,
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Row(
-                            children: [
-                              data['images'].isEmpty
-                                  ? Container(
-                                height: 100,
-                                width: 100,
-                                color: Colors.grey,
-                                child: Center(
-                                  child: Text(
-                                    'No Image',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                              )
-                                  : Image.network(
-                                data['images'][0],
-                                height: 100,
-                                width: 100,
-                                fit: BoxFit.cover,
-                              ),
-                              SizedBox(width: 16),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Finder: ${data['finderName']}',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text('Date: ${data['date']}'),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            ),
-          ),
-          Container(
-            color: Colors.white,
-            padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Column(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.delete_outline),
-                      color: Colors.red,
-                      iconSize: 30,
-                      onPressed: () {
-                        Navigator.pushNamed(
-                            context, MyRouts.lostItemBinCatalogRout);
-                      },
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Found Items',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.add_circle_outline),
-                      color: Colors.green,
-                      iconSize: 30,
-                      onPressed: () {
-                        Navigator.pushNamed(
-                            context, MyRouts.lostItemDetailsRout);
-                      },
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      'Add',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
+          Expanded(child: LostItemsList(collection: lostItemsCollection)),
+          const AdminActionButtons(),
         ],
       ),
     );
   }
+}
 
-  void _logout() {
+class LogoutButton extends StatelessWidget {
+  const LogoutButton({super.key});
+
+  void _logout(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Logout"),
-          content: Text("Are you sure you want to logout?"),
+          title: const Text("Logout"),
+          content: const Text("Are you sure you want to logout?"),
           actions: [
             TextButton(
-              child: Text("Cancel"),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -200,15 +53,15 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
               ),
+              child: const Text("Cancel"),
             ),
             TextButton(
-              child: Text("Logout"),
               onPressed: () async {
-                Navigator.of(context).pop(); // Close the dialog
-                await AdminAuthentication().signOut(); // Add your logout logic here
+                Navigator.of(context).pop();
+                await AdminAuthentication().signOut();
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                    builder: (context) => AdminStudentButtonPage(),
+                    builder: (context) => const AdminStudentButtonPage(),
                   ),
                 );
               },
@@ -216,6 +69,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
               ),
+              child: const Text("Logout"),
             ),
           ],
         );
@@ -223,11 +77,203 @@ class _AdminHomePageState extends State<AdminHomePage> {
     );
   }
 
-  void _showItemDialog(
-      BuildContext context, String docId, Map<String, dynamic> data) {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => _logout(context),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 7),
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: Colors.red[600],
+          shape: BoxShape.rectangle,
+        ),
+        child: const Row(
+          children: [
+            Icon(
+              Icons.logout,
+              color: Colors.white,
+            ),
+            SizedBox(width: 5),
+            Text(
+              "Logout",
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LostItemsList extends StatelessWidget {
+  final CollectionReference collection;
+
+  const LostItemsList({super.key, required this.collection});
+
+  void _showItemDialog(BuildContext context, String docId, Map<String, dynamic> data) {
     showDialog(
       context: context,
       builder: (context) => ItemDetailsDialog(docId: docId, data: data),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: collection.snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return const Center(child: Text('No lost items found.'));
+        }
+        return ListView(
+          children: snapshot.data!.docs.map((doc) {
+            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+            return GestureDetector(
+              onTap: () => _showItemDialog(context, doc.id, data),
+              child: LostItemCard(data: data),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+}
+
+class LostItemCard extends StatelessWidget {
+  final Map<String, dynamic> data;
+
+  const LostItemCard({super.key, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            data['images'] == null || data['images'].isEmpty
+                ? Container(
+                    height: 100,
+                    width: 100,
+                    color: Colors.grey,
+                    child: const Center(
+                      child: Text(
+                        'No Image',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  )
+                : Image.network(
+                    data['images'][0] ?? '',
+                    height: 100,
+                    width: 100,
+                    fit: BoxFit.cover,
+                  ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Finder: ${data['finderName'] ?? 'Unknown'}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text('Date: ${data['date'] ?? 'Unknown'}'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class AdminActionButtons extends StatelessWidget {
+  const AdminActionButtons({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          AdminActionButton(
+            icon: Icons.delete_outline,
+            color: Colors.red,
+            label: 'Found Items',
+            onPressed: () {
+              Navigator.pushNamed(context, MyRouts.lostItemBinCatalogRout);
+            },
+          ),
+          AdminActionButton(
+            icon: Icons.add_circle_outline,
+            color: Colors.green,
+            label: 'Add',
+            onPressed: () {
+              Navigator.pushNamed(context, MyRouts.lostItemDetailsRout);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AdminActionButton extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  final VoidCallback onPressed;
+
+  const AdminActionButton({
+    super.key,
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        IconButton(
+          icon: Icon(icon),
+          color: color,
+          iconSize: 30,
+          onPressed: onPressed,
+        ),
+        const SizedBox(height: 5),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -236,7 +282,7 @@ class ItemDetailsDialog extends StatefulWidget {
   final String docId;
   final Map<String, dynamic> data;
 
-  ItemDetailsDialog({required this.docId, required this.data});
+  const ItemDetailsDialog({super.key, required this.docId, required this.data});
 
   @override
   _ItemDetailsDialogState createState() => _ItemDetailsDialogState();
@@ -256,17 +302,17 @@ class _ItemDetailsDialogState extends State<ItemDetailsDialog> {
       ),
       child: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
+              SizedBox(
                 height: 300,
                 child: PageView.builder(
                   itemCount: widget.data['images'].length,
                   itemBuilder: (context, index) {
                     return Image.network(
-                      widget.data['images'][index],
+                      widget.data['images'][index] ?? '',
                       fit: BoxFit.contain,
                       height: double.infinity,
                       width: double.infinity,
@@ -274,78 +320,40 @@ class _ItemDetailsDialogState extends State<ItemDetailsDialog> {
                   },
                 ),
               ),
-              SizedBox(height: 16),
-              Divider(),
-              Text(
-                'Description: ${widget.data['description']}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Floor: ${widget.data['floor']}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Class: ${widget.data['class']}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                "Finder's: ${widget.data['finderName']}",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                "Finder's Email: ${widget.data['finderEmail']}",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                "Finder's USN: ${widget.data['finderUsn']}",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Date: ${widget.data['date']}',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 16),
-              Divider(),
+              const SizedBox(height: 16),
+              const Divider(),
+              ItemDetailText(label: 'Description', value: widget.data['description'] ?? 'No description available'),
+              ItemDetailText(label: 'Floor', value: widget.data['floor'] ?? 'Unknown'),
+              ItemDetailText(label: 'Class', value: widget.data['class'] ?? 'Unknown'),
+              ItemDetailText(label: "Finder's Name", value: widget.data['finderName'] ?? 'Unknown'),
+              ItemDetailText(label: "Finder's Email", value: widget.data['finderEmail'] ?? 'Unknown'),
+              ItemDetailText(label: "Finder's USN", value: widget.data['finderUsn'] ?? 'Unknown'),
+              ItemDetailText(label: 'Date', value: widget.data['date'] ?? 'Unknown'),
+              const SizedBox(height: 16),
+              const Divider(),
               if (showCollectionFields) ...[
-                TextField(
+                CollectionField(
                   controller: receiverNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Receiver Name',
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: 'Receiver Name',
                 ),
-                SizedBox(height: 8),
-                TextField(
+                CollectionField(
                   controller: receiverUsnController,
-                  decoration: InputDecoration(
-                    labelText: 'Receiver USN',
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: 'Receiver USN',
                 ),
-                SizedBox(height: 8),
-                TextField(
+                CollectionField(
                   controller: receiverEmailController,
-                  decoration: InputDecoration(
-                    labelText: 'Receiver Email',
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                  label: 'Receiver Email',
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: _submitCollectionDetails,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text('Submit'),
+                  child: const Text('Submit'),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
               ],
               ElevatedButton(
                 onPressed: () {
@@ -382,41 +390,61 @@ class _ItemDetailsDialogState extends State<ItemDetailsDialog> {
           .collection('lost_items')
           .doc(widget.docId)
           .delete();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Collection details submitted successfully!')),
-      );
-      Navigator.of(context).pop();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Collection details submitted successfully!')),
+        );
+        Navigator.of(context).pop();
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to submit collection details: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to submit collection details: $e')),
+        );
+      }
     }
   }
 }
 
-class CircleButton extends StatelessWidget {
-  final IconData icon;
-  final Color color;
-  final VoidCallback onPressed;
+class ItemDetailText extends StatelessWidget {
+  final String label;
+  final String value;
 
-  CircleButton({
-    required this.icon,
-    required this.color,
-    required this.onPressed,
+  const ItemDetailText({super.key, required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        '$label: $value',
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+}
+
+class CollectionField extends StatelessWidget {
+  final TextEditingController controller;
+  final String label;
+
+  const CollectionField({
+    super.key,
+    required this.controller,
+    required this.label,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        width: 60,
-        height: 60,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        child: Icon(icon, color: Colors.white),
       ),
     );
   }

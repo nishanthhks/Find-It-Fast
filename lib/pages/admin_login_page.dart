@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lost_and_found_app/pages/admin_home_page.dart';
-import 'package:lost_and_found_app/utils/routs.dart';
 import 'package:lost_and_found_app/services/admin_authentication.dart'; // Import your admin authentication service
 
 class AdminLoginPage extends StatefulWidget {
-  const AdminLoginPage({Key? key}) : super(key: key);
+  const AdminLoginPage({super.key});
 
   @override
   State<AdminLoginPage> createState() => _AdminLoginPageState();
@@ -12,9 +11,6 @@ class AdminLoginPage extends StatefulWidget {
 
 class _AdminLoginPageState extends State<AdminLoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _emailRegex = RegExp(r'^[a-zA-Z0-9_.+-]+@bmsce\.ac\.in$');
-  final _passwordLength = 8;
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -38,7 +34,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
         password: _passwordController.text,
       );
 
-      if (!mounted) return; // Check if the widget is still mounted
+      if (!mounted) return;
 
       setState(() {
         isLoading = false;
@@ -46,7 +42,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
       if (res == "Sign in successful") {
         Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => AdminHomePage()));
+            MaterialPageRoute(builder: (context) => const AdminHomePage()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -63,8 +59,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Container(
-          height: MediaQuery.of(context).size.height, // Ensure full screen height
-          padding: EdgeInsets.symmetric(horizontal: 20),
+          height: MediaQuery.of(context).size.height,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           alignment: Alignment.center,
           child: Form(
             key: _formKey,
@@ -72,93 +68,149 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 0), // Space above the "Admin Login" text
-                Text(
-                  'Admin Login',
-                  style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-                SizedBox(height: 20),
-                Image.asset(
-                  "assets/images/admin_image.png",
-                  fit: BoxFit.contain,
-                  height: 250, // Adjust the height as needed
-                  width: 250, // Adjust the width as needed
-                ),
-                SizedBox(height: 30),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!_emailRegex.hasMatch(value)) {
-                      return 'Email must end with @bmsce.ac.in';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(color: Colors.black),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    if (value.length < _passwordLength) {
-                      return 'Password must be at least $_passwordLength characters long';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: 20),
-                isLoading
-                    ? CircularProgressIndicator() // Show a loading indicator if isLoading is true
-                    : ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black, // Background color
-                    foregroundColor: Colors.white, // Text color
-                  ),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      adminSignIn();
-                    }
-                  },
-                  child: Text('Log in'),
-                ),
-                SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    dialogBox(context);
-                  },
-                  child: Text(
-                    'Forgot Password?',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
+                const LoginTitle(),
+                const SizedBox(height: 20),
+                const LoginImage(),
+                const SizedBox(height: 30),
+                EmailFormField(controller: _emailController),
+                const SizedBox(height: 20),
+                PasswordFormField(controller: _passwordController),
+                const SizedBox(height: 20),
+                isLoading ? const CircularProgressIndicator() : LoginButton(onPressed: adminSignIn),
+                const SizedBox(height: 10),
+                ForgotPasswordButton(),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class LoginTitle extends StatelessWidget {
+  const LoginTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Admin Login',
+      style: TextStyle(
+        fontSize: 30,
+        fontWeight: FontWeight.bold,
+        color: Colors.black,
+      ),
+    );
+  }
+}
+
+class LoginImage extends StatelessWidget {
+  const LoginImage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      "assets/images/admin_image.png",
+      fit: BoxFit.contain,
+      height: 250,
+      width: 250,
+    );
+  }
+}
+
+class EmailFormField extends StatelessWidget {
+  final TextEditingController controller;
+
+  const EmailFormField({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final _emailRegex = RegExp(r'^[a-zA-Z0-9_.+-]+@bmsce\.ac\.in$');
+
+    return TextFormField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: 'Email',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.black),
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your email';
+        }
+        if (!_emailRegex.hasMatch(value)) {
+          return 'Email must end with @bmsce.ac.in';
+        }
+        return null;
+      },
+    );
+  }
+}
+
+class PasswordFormField extends StatelessWidget {
+  final TextEditingController controller;
+
+  const PasswordFormField({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    final _passwordLength = 8;
+
+    return TextFormField(
+      controller: controller,
+      obscureText: true,
+      decoration: InputDecoration(
+        labelText: 'Password',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.black),
+        ),
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter your password';
+        }
+        if (value.length < _passwordLength) {
+          return 'Password must be at least $_passwordLength characters long';
+        }
+        return null;
+      },
+    );
+  }
+}
+
+class LoginButton extends StatelessWidget {
+  final VoidCallback onPressed;
+
+  const LoginButton({super.key, required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
+      onPressed: onPressed,
+      child: const Text('Log in'),
+    );
+  }
+}
+
+class ForgotPasswordButton extends StatelessWidget {
+  const ForgotPasswordButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        dialogBox(context);
+      },
+      child: const Text(
+        'Forgot Password?',
+        style: TextStyle(color: Colors.black),
       ),
     );
   }
@@ -180,82 +232,139 @@ void dialogBox(BuildContext context) {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
           ),
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Forgot Password',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              const DialogTitle(),
               const SizedBox(height: 20),
-              const Text(
-                'Enter your email to reset your password',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
+              const DialogDescription(),
               const SizedBox(height: 20),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: Colors.black),
-                  ),
-                ),
-              ),
+              DialogEmailField(controller: _emailController),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black, // Background color
-                      foregroundColor: Colors.white, // Text color
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('Close'),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black, // Background color
-                      foregroundColor: Colors.white, // Text color
-                    ),
-                    onPressed: () async {
-                      final email = _emailController.text.trim();
-                      try {
-                        await auth.sendPasswordResetEmail(email: email);
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content:
-                            Text('Password reset email sent to $email'),
-                          ),
-                        );
-                      } catch (error) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Error sending password reset email'),
-                          ),
-                        );
-                      }
-                    },
-                    child: Text('Submit'),
-                  ),
-                ],
-              ),
+              DialogActions(emailController: _emailController, auth: auth),
             ],
           ),
         ),
       );
     },
   );
+}
+
+class DialogTitle extends StatelessWidget {
+  const DialogTitle({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Forgot Password',
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+}
+
+class DialogDescription extends StatelessWidget {
+  const DialogDescription({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text(
+      'Enter your email to reset your password',
+      style: TextStyle(
+        fontSize: 16,
+      ),
+    );
+  }
+}
+
+class DialogEmailField extends StatelessWidget {
+  final TextEditingController controller;
+
+  const DialogEmailField({super.key, required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(
+        labelText: 'Email',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10),
+          borderSide: const BorderSide(color: Colors.black),
+        ),
+      ),
+    );
+  }
+}
+
+class DialogActions extends StatelessWidget {
+  final TextEditingController emailController;
+  final AdminAuthentication auth;
+
+  const DialogActions({
+    super.key,
+    required this.emailController,
+    required this.auth,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        DialogActionButton(
+          label: 'Close',
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        const SizedBox(width: 10),
+        DialogActionButton(
+          label: 'Submit',
+          onPressed: () async {
+            final email = emailController.text.trim();
+            try {
+              await auth.sendPasswordResetEmail(email: email);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Password reset email sent to $email')),
+              );
+            } catch (error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Error sending password reset email'),
+                ),
+              );
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class DialogActionButton extends StatelessWidget {
+  final String label;
+  final VoidCallback onPressed;
+
+  const DialogActionButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+      ),
+      onPressed: onPressed,
+      child: Text(label),
+    );
+  }
 }

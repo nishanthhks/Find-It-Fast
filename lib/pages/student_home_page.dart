@@ -11,57 +11,50 @@ class StudentHomePage extends StatefulWidget {
 
 class _StudentHomePageState extends State<StudentHomePage> {
   final CollectionReference lostItemsCollection =
-  FirebaseFirestore.instance.collection('lost_items');
+      FirebaseFirestore.instance.collection('lost_items');
 
-  void _logout() {
+  void _logout() async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Logout"),
-          backgroundColor: Colors.white, // Set background color to white
+          backgroundColor: Colors.white,
           content: Text(
             "Are you sure you want to logout?",
-            style: TextStyle(color: Colors.black), // Content text color
+            style: TextStyle(color: Colors.black),
           ),
           actions: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.black, // Button background color
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: TextButton(
-                child: Text(
-                  "Cancel",
-                  style: TextStyle(color: Colors.white), // Button text color
-                ),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
+            _buildDialogButton(
+              label: "Cancel",
+              onPressed: () => Navigator.of(context).pop(),
             ),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.black, // Button background color
-                borderRadius: BorderRadius.circular(3),
-              ),
-              child: TextButton(
-                child: Text(
-                  "Logout",
-                  style: TextStyle(color: Colors.white), // Button text color
-                ),
-                onPressed: () async {
-                  Navigator.of(context).pop(); // Close the dialog
-                  await StudentAuthentication()
-                      .signOut(); // Go back to previous screen
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(
-                      builder: (context) => AdminStudentButtonPage()));
-                },
-              ),
+            _buildDialogButton(
+              label: "Logout",
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await StudentAuthentication().signOut();
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => AdminStudentButtonPage()),
+                );
+              },
             ),
           ],
         );
       },
+    );
+  }
+
+  Widget _buildDialogButton({required String label, required VoidCallback onPressed}) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.black,
+        borderRadius: BorderRadius.circular(5),
+      ),
+      child: TextButton(
+        child: Text(label, style: TextStyle(color: Colors.white)),
+        onPressed: onPressed,
+      ),
     );
   }
 
@@ -74,7 +67,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
           style: TextStyle(color: Colors.black),
         ),
         backgroundColor: Colors.white,
-        automaticallyImplyLeading: false, // Remove the back button
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: _logout,
@@ -82,20 +75,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
               margin: EdgeInsets.symmetric(horizontal: 7),
               padding: EdgeInsets.all(5),
               decoration: BoxDecoration(
-                color: Colors.black, // Changed to black background
+                color: Colors.black,
                 shape: BoxShape.rectangle,
               ),
               child: Row(
                 children: [
-                  Icon(
-                    Icons.logout,
-                    color: Colors.white, // White icon color
-                  ),
+                  Icon(Icons.logout, color: Colors.white),
                   SizedBox(width: 5),
-                  Text(
-                    "Logout",
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  Text("Logout", style: TextStyle(color: Colors.white)),
                 ],
               ),
             ),
@@ -114,64 +101,67 @@ class _StudentHomePageState extends State<StudentHomePage> {
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(child: Text('No lost items found.'));
           }
-          return ListView(
-            children: snapshot.data!.docs.map((doc) {
+          return ListView.builder(
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              var doc = snapshot.data!.docs[index];
               Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
               return GestureDetector(
                 onTap: () => _showItemDialog(context, data),
                 child: Card(
                   elevation: 5,
                   margin: EdgeInsets.all(16),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        color: Colors.grey,
-                        child: data['images'].isEmpty
-                            ? Center(
-                          child: Text(
-                            'No Image Available',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        )
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        data['images'] == null || data['images'].isEmpty
+                            ? Container(
+                                height: 100,
+                                width: 100,
+                                color: Colors.grey,
+                                child: const Center(
+                                  child: Text(
+                                    'No Image',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ),
+                              )
                             : Image.network(
-                          data['images'][0],
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Finder: ${data['finderName']}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                                data['images'][0] ?? '',
+                                height: 100,
+                                width: 100,
+                                fit: BoxFit.cover,
                               ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Date: ${data['date']}',
-                              style: TextStyle(
-                                fontStyle: FontStyle.italic,
-                                fontSize: 14,
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Finder: ${data['finderName'] ?? 'Unknown'}',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 8),
+                              Text('Date: ${data['date'] ?? 'Unknown'}'),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
-            }).toList(),
+            },
           );
         },
       ),
@@ -184,7 +174,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
             IconButton(
               icon: Icon(Icons.delete_outline),
               onPressed: () {
-                // Implement your delete logic here
                 Navigator.pushNamed(context, MyRouts.lostItemBinCatalogRout);
               },
               tooltip: 'Delete Items',
@@ -220,10 +209,10 @@ class StudentItemDetailsDialog extends StatelessWidget {
           Container(
             height: 300,
             child: PageView.builder(
-              itemCount: data['images'].length,
+              itemCount: (data['images'] ?? []).length,
               itemBuilder: (context, index) {
                 return Image.network(
-                  data['images'][index],
+                  data['images'][index] ?? '',
                   fit: BoxFit.cover,
                 );
               },
@@ -234,52 +223,32 @@ class StudentItemDetailsDialog extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Description:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(data['description']),
-                SizedBox(height: 12),
-                Text(
-                  'Floor:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(data['floor']),
-                SizedBox(height: 12),
-                Text(
-                  'Class:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(data['class']),
-                SizedBox(height: 12),
-                Text(
-                  "Finder:",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(data['finderName']),
-                SizedBox(height: 12),
-                Text(
-                  "Finder's Email:",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(data['finderEmail']),
-                SizedBox(height: 12),
-                Text(
-                  "Finder's USN:",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(data['finderUsn']),
-                SizedBox(height: 12),
-                Text(
-                  'Date:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(data['date']),
+                _buildDetailText('Description:', data['description'] ?? 'No description available'),
+                _buildDetailText('Floor:', data['floor'] ?? 'Unknown'),
+                _buildDetailText('Class:', data['class'] ?? 'Unknown'),
+                _buildDetailText("Finder:", data['finderName'] ?? 'Unknown'),
+                _buildDetailText("Finder's Email:", data['finderEmail'] ?? 'Unknown'),
+                _buildDetailText("Finder's USN:", data['finderUsn'] ?? 'Unknown'),
+                _buildDetailText('Date:', data['date'] ?? 'Unknown'),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDetailText(String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Text(value),
+        SizedBox(height: 12),
+      ],
     );
   }
 }
